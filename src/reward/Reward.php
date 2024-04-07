@@ -22,28 +22,17 @@
 
 declare(strict_types=1);
 
-namespace nicholass003\quantumcrates;
+namespace nicholass003\quantumcrates\reward;
 
-use nicholass003\quantumcrates\probability\tests\ProbabilityTestExecute;
-use pocketmine\plugin\PluginBase;
-use pocketmine\utils\SingletonTrait;
-use function class_exists;
+interface Reward{
 
-class QuantumCrates extends PluginBase{
-	use SingletonTrait;
+	public function getId() : string;
 
-	private const IS_DEVELOPMENT_BUILD = true;
-	private const BASE_VERSION = "1.0.0";
+	public function getTier() : int;
 
-	protected function onLoad() : void{
-		$this->saveDefaultConfig();
-	}
+	public function getItems() : array;
 
-	protected function onEnable() : void{
-		if(self::IS_DEVELOPMENT_BUILD === true){
-			if(class_exists(ProbabilityTestExecute::class)){
-				ProbabilityTestExecute::execute();
-			}
-		}
-	}
+	public function getChance() : int;
+
+	//TODO: add multiplier
 }

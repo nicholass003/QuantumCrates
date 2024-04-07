@@ -22,28 +22,15 @@
 
 declare(strict_types=1);
 
-namespace nicholass003\quantumcrates;
+namespace nicholass003\quantumcrates\reward\tier;
 
-use nicholass003\quantumcrates\probability\tests\ProbabilityTestExecute;
-use pocketmine\plugin\PluginBase;
-use pocketmine\utils\SingletonTrait;
-use function class_exists;
+final class RewardTier{
 
-class QuantumCrates extends PluginBase{
-	use SingletonTrait;
-
-	private const IS_DEVELOPMENT_BUILD = true;
-	private const BASE_VERSION = "1.0.0";
-
-	protected function onLoad() : void{
-		$this->saveDefaultConfig();
-	}
-
-	protected function onEnable() : void{
-		if(self::IS_DEVELOPMENT_BUILD === true){
-			if(class_exists(ProbabilityTestExecute::class)){
-				ProbabilityTestExecute::execute();
-			}
-		}
-	}
+	public const BASIC = 0;
+	public const COMMON = 1;
+	public const UNCOMMON = 2;
+	public const RARE = 3;
+	public const VERY_RARE = 4;
+	public const ULTRA_RARE = 5;
+	public const MYTHICAL = 6;
 }
