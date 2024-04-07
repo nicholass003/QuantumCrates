@@ -28,7 +28,7 @@ use Generator;
 use nicholass003\quantumcrates\reward\BasicReward;
 use nicholass003\quantumcrates\reward\Reward;
 use nicholass003\quantumcrates\reward\RewardManager;
-
+use pocketmine\item\Item;
 use function array_sum;
 use function mt_rand;
 
@@ -36,22 +36,39 @@ final class Probability{
 
 	public function __construct(
 		private array $objects,
+		private int $calculateType,
 		private BasicReward $basicReward
 	){}
 
-	public function calculate() : Reward{
+	public function calculate() : Reward|Item{
 		$total = (int) array_sum($this->objects);
 		$rand = mt_rand(1, $total);
 		$partialSum = 0;
-		$rewards = RewardManager::getInstance()->getReward($this->basicReward->getId());
-		foreach($this->objects as $id => $chance){
-			$partialSum += $chance;
-			if($rand <= $chance){
-				if($chance === 100){
-					continue;
+		$rewards = $this->calculateType === ProbabilityCalculateType::REWARD_TIER ? RewardManager::getInstance()->getReward($this->basicReward->getId()) : $this->basicReward->getDefaultItem();
+		switch($this->calculateType){
+			case ProbabilityCalculateType::REWARD_TIER:
+				foreach($this->objects as $id => $chance){
+					$partialSum += $chance;
+					if($rand <= $chance){
+						if($chance === 100){
+							continue;
+						}
+						$rewards = RewardManager::getInstance()->getReward($id);
+					}
 				}
-				$rewards = RewardManager::getInstance()->getReward($id);
-			}
+				break;
+			case ProbabilityCalculateType::REWARD_ITEMS:
+				/** @var Item $item */
+				foreach($this->objects as $item => $chance){
+					$partialSum += $chance;
+					if($rand <= $chance){
+						if($chance === 100){
+							continue;
+						}
+						$rewards = $item;
+					}
+				}
+				break;
 		}
 		return $rewards;
 	}

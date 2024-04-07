@@ -22,37 +22,23 @@
 
 declare(strict_types=1);
 
-namespace nicholass003\quantumcrates\reward;
+namespace nicholass003\quantumcrates;
 
-use nicholass003\quantumcrates\reward\chance\RewardDefaultChance;
-use nicholass003\quantumcrates\reward\tier\RewardTier;
-use pocketmine\item\Item;
+trait ManagerTrait{
 
-class BasicReward implements Reward{
+    private static $instance = null;
 
-	public function __construct(
-		private array $items,
-		private string $id,
-		private Item $defaultItem
-	){}
+    public static function getInstance() : self{
+        return static::$instance;
+    }
 
-	public function getId() : string{
-		return $this->id;
-	}
+    public function init() : void{
+        if(static::$instance === null){
+            static::$instance = $this;
+        }
+    }
 
-	public function getTier() : int{
-		return RewardTier::BASIC;
-	}
-
-	public function getItems() : array{
-		return $this->items;
-	}
-
-	public function getDefaultItem() : Item{
-		return $this->defaultItem;
-	}
-
-	public function getChance() : int{
-		return RewardDefaultChance::getChance($this);
-	}
+    public static function isRegistered() : bool{
+        return static::$instance !== null;
+    }
 }

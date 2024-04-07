@@ -25,31 +25,26 @@ declare(strict_types=1);
 namespace nicholass003\quantumcrates\command;
 
 use nicholass003\quantumcrates\QuantumCrates;
+use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
-use pocketmine\player\Player;
-use function strtolower;
+use pocketmine\plugin\Plugin;
+use pocketmine\plugin\PluginOwned;
 
-class QuantumCratesCommand extends QuantumCratesBaseCommand{
+final class QuantumCratesBaseCommand extends Command implements PluginOwned{
 
-	public function __construct(
-		private QuantumCrates $plugin
-	){
-		parent::__construct($plugin, "quantumcrates", "QuantumCrates Command", "Usage: /quantumcrates [options]", ["qcrate", "qcrates"]);
-		$this->setPermission("quantumcrates.command");
-	}
+    public function __construct(
+        private QuantumCrates $plugin,
+        private string $name,
+        private string $description = "",
+        private string $usageMessage = "",
+        private array $aliases = []
+    ){
+        parent::__construct($name, $description, $usageMessage, $aliases);
+    }
 
-	public function execute(CommandSender $sender, string $commandLabel, array $args) : void{
-		if($sender instanceof Player){
-			if(isset($args[0])){
-				switch(strtolower($args[0])){
-					case "get":
-						if(!$sender->hasPermission("quantumcrates.command.get")){
-							$sender->sendMessage(QuantumCrates::PREFIX . "You do not have permission to use this command.");
-							return;
-						}
-						break;
-				}
-			}
-		}
-	}
+    public function execute(CommandSender $sender, string $commandLabel, array $args) : void{}
+
+    public function getOwningPlugin() : Plugin{
+        return $this->plugin;
+    }
 }

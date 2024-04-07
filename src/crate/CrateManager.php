@@ -22,38 +22,28 @@
 
 declare(strict_types=1);
 
-namespace nicholass003\quantumcrates\reward;
+namespace nicholass003\quantumcrates\crate;
 
 use nicholass003\quantumcrates\ManagerTrait;
 use nicholass003\quantumcrates\QuantumCrates;
-use nicholass003\quantumcrates\reward\exception\RewardException;
 
-final class RewardManager{
-	use ManagerTrait;
+final class CrateManager{
+    use ManagerTrait;
 
-	private array $rewards = [];
+    private array $crates = [];
 
-	public function __construct(
-		private QuantumCrates $plugin
-	){}
+    public function __construct(
+        private QuantumCrates $plugin
+    ){}
 
-	public function addReward(string $id, Reward $reward) : void{
-		if(!isset($this->rewards[$id])){
-			$this->rewards[$id] = $reward;
-		}
-	}
+    public function addCrate(string $id, Crate $crate) : CrateManager{
+        if(!isset($this->crates[$id])){
+            $this->crates[$id] = $crate;
+        }
+        return $this;
+    }
 
-	public function removeReward(string $id) : void{
-		if(isset($this->rewards[$id])){
-			unset($this->rewards[$id]);
-		}
-	}
-
-	public function getRewards() : array{
-		return $this->rewards;
-	}
-
-	public function getReward(string $id) : Reward{
-		return $this->rewards[$id] ?? throw new RewardException("Missing reward from id: {$id}");
-	}
+    public function getCrateById(string $id) : ?Crate{
+        return $this->crates[$id] ?? null;
+    }
 }

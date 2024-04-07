@@ -22,37 +22,10 @@
 
 declare(strict_types=1);
 
-namespace nicholass003\quantumcrates\reward;
+namespace nicholass003\quantumcrates\crate\type;
 
-use nicholass003\quantumcrates\reward\chance\RewardDefaultChance;
-use nicholass003\quantumcrates\reward\tier\RewardTier;
-use pocketmine\item\Item;
+final class CrateItemType{
 
-class BasicReward implements Reward{
-
-	public function __construct(
-		private array $items,
-		private string $id,
-		private Item $defaultItem
-	){}
-
-	public function getId() : string{
-		return $this->id;
-	}
-
-	public function getTier() : int{
-		return RewardTier::BASIC;
-	}
-
-	public function getItems() : array{
-		return $this->items;
-	}
-
-	public function getDefaultItem() : Item{
-		return $this->defaultItem;
-	}
-
-	public function getChance() : int{
-		return RewardDefaultChance::getChance($this);
-	}
+    public const CHEST = "chest";
+    public const ENDER_CHEST = "ender_chest";
 }

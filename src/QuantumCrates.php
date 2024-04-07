@@ -24,7 +24,11 @@ declare(strict_types=1);
 
 namespace nicholass003\quantumcrates;
 
+use nicholass003\quantumcrates\command\QuantumCratesCommand;
+use nicholass003\quantumcrates\crate\CrateManager;
 use nicholass003\quantumcrates\probability\tests\ProbabilityTestExecute;
+use nicholass003\quantumcrates\reward\RewardManager;
+use nicholass003\quantumcrates\task\UpdateCheckerTask;
 use pocketmine\plugin\PluginBase;
 use pocketmine\utils\SingletonTrait;
 use function class_exists;
@@ -32,11 +36,22 @@ use function class_exists;
 class QuantumCrates extends PluginBase{
 	use SingletonTrait;
 
+	public const PREFIX = "§d[§eQuantumCrates§d]§r ";
+
 	private const IS_DEVELOPMENT_BUILD = true;
-	private const BASE_VERSION = "1.0.0";
 
 	protected function onLoad() : void{
 		$this->saveDefaultConfig();
+
+		if(!CrateManager::isRegistered()){
+			$crateManager = new CrateManager($this);
+			$crateManager->init();
+		}
+
+		if(!RewardManager::isRegistered()){
+			$rewardManager = new RewardManager($this);
+			$rewardManager->init();
+		}
 	}
 
 	protected function onEnable() : void{
@@ -45,5 +60,14 @@ class QuantumCrates extends PluginBase{
 				ProbabilityTestExecute::execute();
 			}
 		}
+
+		$this->registerCommands();
+
+		$this->getServer()->getAsyncPool()->submitTask(new UpdateCheckerTask($this));
+	}
+
+	private function registerCommands() : void{
+		$cmdMap = $this->getServer()->getCommandMap();
+		$cmdMap->register("quantumcrates", new QuantumCratesCommand($this));
 	}
 }
