@@ -33,12 +33,12 @@ class EventListener implements Listener{
 	public function onPlayerInteract(PlayerInteractEvent $event) : void{
 		$player = $event->getPlayer();
 		$item = $event->getItem();
-        $crate = CrateItemUtils::read($item);
-        if($crate !== null){
-            $crate->openCrate($player);
-            $item->pop();
-            $player->getInventory()->setItemInHand($item);
-            $event->cancel();
-        }
+		$crate = CrateItemUtils::read($item);
+		if($crate !== null){
+			$crate->openCrate($player);
+			$item->pop();
+			$player->getInventory()->setItemInHand($item);
+			$event->cancel();
+		}
 	}
 }
