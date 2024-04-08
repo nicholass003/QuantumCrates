@@ -30,7 +30,7 @@ use function strtolower;
 
 final class CrateColorNameUtils{
 
-    private static array $colors = [];
+	private static array $colors = [];
 
 	public static function defaultColor(CrateType $crateType) : string{
 		return match($crateType){
@@ -44,15 +44,15 @@ final class CrateColorNameUtils{
 		};
 	}
 
-    public static function setCustomColor(array $customColors) : void{
-        self::$colors = $customColors;
-    }
-
-	public static function customColor(CrateType $crateType) : string{
-        return self::$colors[self::parseName($crateType->getName())] ?? self::defaultColor($crateType);
+	public static function setCustomColor(array $customColors) : void{
+		self::$colors = $customColors;
 	}
 
-	private static function parseName(string $name) : string{
+	public static function customColor(CrateType $crateType) : string{
+		return self::$colors[self::parseName($crateType->getName())] ?? self::defaultColor($crateType);
+	}
+
+	public static function parseName(string $name) : string{
 		return strtolower(str_replace(" ", "_", $name));
 	}
 }

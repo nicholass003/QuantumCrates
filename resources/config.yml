@@ -1,0 +1,3 @@
+# QuantumCrates Configuration #
+# Load crates.yml to create Crates
+load-config: true

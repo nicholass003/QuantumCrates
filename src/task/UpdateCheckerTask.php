@@ -27,6 +27,7 @@ namespace nicholass003\quantumcrates\task;
 use nicholass003\quantumcrates\QuantumCrates;
 use pocketmine\plugin\ApiVersion;
 use pocketmine\scheduler\AsyncTask;
+use pocketmine\Server;
 use pocketmine\utils\Internet;
 use function json_decode;
 use function version_compare;
@@ -38,15 +39,10 @@ use function version_compare;
 
 final class UpdateCheckerTask extends AsyncTask{
 
-	private string $name;
-	private string $version;
-
 	public function __construct(
-		private QuantumCrates $plugin
-	){
-		$this->name = $plugin->getName();
-		$this->version = $plugin->getDescription()->getVersion();
-	}
+		private string $name,
+		private string $version
+	){}
 
 	public function onRun() : void{
 		$result = Internet::getURL("https://poggit.pmmp.io/releases.min.json?name=" . $this->name, 10, [], $err);
@@ -54,7 +50,8 @@ final class UpdateCheckerTask extends AsyncTask{
 	}
 
 	public function onCompletion() : void{
-		$logger = $this->plugin->getLogger();
+		$server = Server::getInstance();
+		$logger = $server->getLogger();
 		[$body, $err] = $this->getResult();
 		if($err){
 			$logger->warning("UpdateChecker failed.");
@@ -64,7 +61,7 @@ final class UpdateCheckerTask extends AsyncTask{
 			if($versions){
 				foreach($versions as $version){
 					if(version_compare($this->version, $version["version"]) === -1){
-						if(ApiVersion::isCompatible($this->plugin->getServer()->getApiVersion(), $version["api"][0])){
+						if(ApiVersion::isCompatible($server->getApiVersion(), $version["api"][0])){
 							$logger->notice($this->name . " v" . $version["version"] . " is available for download at " . $version["artifact_url"] . "/" . $this->name . ".phar");
 							break;
 						}

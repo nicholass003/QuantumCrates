@@ -6,3 +6,5 @@ author: nicholass003
 permissions:
   quantumcrates.command:
     default: true
+  quantumcrates.command.get:
+    default: op

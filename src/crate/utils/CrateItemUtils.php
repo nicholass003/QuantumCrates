@@ -22,30 +22,29 @@
 
 declare(strict_types=1);
 
-namespace nicholass003\quantumcrates\command;
+namespace nicholass003\quantumcrates\crate\utils;
 
-use nicholass003\quantumcrates\QuantumCrates;
-use pocketmine\command\Command;
-use pocketmine\command\CommandSender;
-use pocketmine\lang\Translatable;
-use pocketmine\plugin\Plugin;
-use pocketmine\plugin\PluginOwned;
+use nicholass003\quantumcrates\crate\Crate;
+use nicholass003\quantumcrates\crate\CrateManager;
+use pocketmine\item\Item;
+use pocketmine\nbt\tag\StringTag;
 
-class QuantumCratesBaseCommand extends Command implements PluginOwned{
+final class CrateItemUtils{
 
-	public function __construct(
-		private QuantumCrates $plugin,
-		private string $name,
-		protected Translatable|string $description = "",
-		protected Translatable|string $usageMessage = "",
-		private array $aliases = []
-	){
-		parent::__construct($name, $description, $usageMessage, $aliases);
+	public const CRATE_ITEM = "CrateItem";
+
+	public static function write(Crate $crate) : Item{
+		$item = $crate->getItemType();
+		$item->getNamedTag()->setString(self::CRATE_ITEM, $crate->getId());
+		return $item;
 	}
 
-	public function execute(CommandSender $sender, string $commandLabel, array $args) : void{}
-
-	public function getOwningPlugin() : Plugin{
-		return $this->plugin;
+	public static function read(Item $item) : ?Crate{
+		$crate = null;
+        $tag = $item->getNamedTag()->getTag(self::CRATE_ITEM);
+        if($tag !== null && $tag instanceof StringTag){
+            $crate = CrateManager::getInstance()->getCrateById($tag->getValue());
+        }
+		return $crate;
 	}
 }

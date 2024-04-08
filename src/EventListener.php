@@ -22,30 +22,23 @@
 
 declare(strict_types=1);
 
-namespace nicholass003\quantumcrates\command;
+namespace nicholass003\quantumcrates;
 
-use nicholass003\quantumcrates\QuantumCrates;
-use pocketmine\command\Command;
-use pocketmine\command\CommandSender;
-use pocketmine\lang\Translatable;
-use pocketmine\plugin\Plugin;
-use pocketmine\plugin\PluginOwned;
+use nicholass003\quantumcrates\crate\utils\CrateItemUtils;
+use pocketmine\event\Listener;
+use pocketmine\event\player\PlayerInteractEvent;
 
-class QuantumCratesBaseCommand extends Command implements PluginOwned{
+class EventListener implements Listener{
 
-	public function __construct(
-		private QuantumCrates $plugin,
-		private string $name,
-		protected Translatable|string $description = "",
-		protected Translatable|string $usageMessage = "",
-		private array $aliases = []
-	){
-		parent::__construct($name, $description, $usageMessage, $aliases);
-	}
-
-	public function execute(CommandSender $sender, string $commandLabel, array $args) : void{}
-
-	public function getOwningPlugin() : Plugin{
-		return $this->plugin;
+	public function onPlayerInteract(PlayerInteractEvent $event) : void{
+		$player = $event->getPlayer();
+		$item = $event->getItem();
+        $crate = CrateItemUtils::read($item);
+        if($crate !== null){
+            $crate->openCrate($player);
+            $item->pop();
+            $player->getInventory()->setItemInHand($item);
+            $event->cancel();
+        }
 	}
 }

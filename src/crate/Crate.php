@@ -26,9 +26,15 @@ namespace nicholass003\quantumcrates\crate;
 
 use nicholass003\quantumcrates\crate\type\CrateItemType;
 use nicholass003\quantumcrates\crate\type\CrateType;
+use nicholass003\quantumcrates\probability\Probability;
+use nicholass003\quantumcrates\probability\ProbabilityCalculateType;
+use nicholass003\quantumcrates\reward\BasicReward;
 use nicholass003\quantumcrates\reward\Reward;
+use nicholass003\quantumcrates\reward\RewardManager;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\item\Item;
+use pocketmine\player\Player;
+use pocketmine\Server;
 
 class Crate{
 
@@ -38,6 +44,7 @@ class Crate{
 	private string $originalName;
 
 	private Item $itemType;
+	private ?BasicReward $basicReward = null;
 
 	public function __construct(
 		private string $id,
@@ -46,11 +53,15 @@ class Crate{
 		private string $crateItemType
 	){
 		$this->originalName = $crateType->getName() . " ({$id})";
-		$this->itemType = $this->parseItemType($crateItemType);
+		$this->itemType = $this->parseItemType($crateItemType)->setCustomName($this->name);
+	}
+
+	public function getId() : string{
+		return $this->id;
 	}
 
 	public function getName() : string{
-		return $this->name;	
+		return $this->name;
 	}
 
 	public function setName(string $name) : Crate{
@@ -66,17 +77,49 @@ class Crate{
 		return $this->crateType;
 	}
 
-	public function getReward() : array{
+	public function getRewards() : array{
 		return $this->rewards;
 	}
 
 	public function setRewards(array $rewards) : Crate{
 		$this->rewards = $rewards;
+		foreach($this->rewards as $reward){
+			RewardManager::getInstance()->addReward($reward->getId(), $reward);
+		}
 		return $this;
 	}
 
 	public function getItemType() : Item{
 		return $this->itemType;
+	}
+
+	public function getBasicReward() : BasicReward{
+		return $this->basicReward;
+	}
+
+	public function setBasicReward(BasicReward $basicReward) : Crate{
+		$this->basicReward = $basicReward;
+		return $this;
+	}
+
+	public function openCrate(Player $player, int $count = 1) : void{
+		$probabilities = [];
+		foreach($this->rewards as $reward){
+			$probabilities[$reward->getId()] = $reward->getChance();
+		}
+		$probabilityTier = new Probability($probabilities, ProbabilityCalculateType::REWARD_TIER, $this->basicReward);
+		$resultsTier = $probabilityTier->generateResults($count);
+		foreach($resultsTier as $result){
+			if($result instanceof Reward){
+				$probabilityItems = new Probability($result->getItems(), ProbabilityCalculateType::REWARD_ITEMS, $this->basicReward);
+				$resultsItems = $probabilityItems->generateResults($count);
+				/** @var Item $item */
+				foreach($resultsItems as $item){
+					$player->getInventory()->addItem($item);
+					Server::getInstance()->broadcastMessage($player->getName() . " just got " . $item->getName() . " x" . $item->getCount() . " from " . $this->getName());
+				}
+			}
+		}
 	}
 
 	private function parseItemType(string $crateItemType) : Item{

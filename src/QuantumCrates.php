@@ -26,10 +26,12 @@ namespace nicholass003\quantumcrates;
 
 use nicholass003\quantumcrates\command\QuantumCratesCommand;
 use nicholass003\quantumcrates\crate\CrateManager;
+use nicholass003\quantumcrates\item\ItemSaviorManager;
 use nicholass003\quantumcrates\probability\tests\ProbabilityTestExecute;
 use nicholass003\quantumcrates\reward\RewardManager;
 use nicholass003\quantumcrates\task\UpdateCheckerTask;
 use pocketmine\plugin\PluginBase;
+use pocketmine\utils\Config;
 use pocketmine\utils\SingletonTrait;
 use function class_exists;
 
@@ -38,14 +40,23 @@ class QuantumCrates extends PluginBase{
 
 	public const PREFIX = "§d[§eQuantumCrates§d]§r ";
 
+	private Config $data;
+
 	private const IS_DEVELOPMENT_BUILD = true;
+	private const IS_NEED_A_TEST = false;
 
 	protected function onLoad() : void{
 		$this->saveDefaultConfig();
+		$this->saveResource("crates.yml");
 
 		if(!CrateManager::isRegistered()){
 			$crateManager = new CrateManager($this);
 			$crateManager->init();
+		}
+
+		if(!ItemSaviorManager::isRegistered()){
+			$itemSaviorManager = new ItemSaviorManager($this);
+			$itemSaviorManager->init();
 		}
 
 		if(!RewardManager::isRegistered()){
@@ -55,15 +66,28 @@ class QuantumCrates extends PluginBase{
 	}
 
 	protected function onEnable() : void{
-		if(self::IS_DEVELOPMENT_BUILD === true){
+
+		$this->data = new Config($this->getDataFolder() . "crates.yml", Config::YAML);
+
+		if($this->getConfig()->get("load-config", false)){
+			CrateManager::getInstance()->loadFromConfig($this->data);
+		}
+
+		if(self::IS_DEVELOPMENT_BUILD === true && self::IS_NEED_A_TEST === true){
 			if(class_exists(ProbabilityTestExecute::class)){
 				ProbabilityTestExecute::execute();
 			}
 		}
 
+		$this->getServer()->getPluginManager()->registerEvents(new EventListener(), $this);
+
 		$this->registerCommands();
 
-		$this->getServer()->getAsyncPool()->submitTask(new UpdateCheckerTask($this));
+		$this->getServer()->getAsyncPool()->submitTask(new UpdateCheckerTask($this->getName(), $this->getDescription()->getVersion()));
+	}
+
+	protected function onDisable() : void{
+
 	}
 
 	private function registerCommands() : void{

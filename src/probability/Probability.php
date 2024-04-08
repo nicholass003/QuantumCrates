@@ -25,6 +25,7 @@ declare(strict_types=1);
 namespace nicholass003\quantumcrates\probability;
 
 use Generator;
+use nicholass003\quantumcrates\item\ItemSaviorManager;
 use nicholass003\quantumcrates\reward\BasicReward;
 use nicholass003\quantumcrates\reward\Reward;
 use nicholass003\quantumcrates\reward\RewardManager;
@@ -58,14 +59,13 @@ final class Probability{
 				}
 				break;
 			case ProbabilityCalculateType::REWARD_ITEMS:
-				/** @var Item $item */
-				foreach($this->objects as $item => $chance){
+				foreach($this->objects as $data => $chance){
 					$partialSum += $chance;
 					if($rand <= $chance){
 						if($chance === 100){
 							continue;
 						}
-						$rewards = $item;
+						$rewards = ItemSaviorManager::getInstance()->read($data);
 					}
 				}
 				break;

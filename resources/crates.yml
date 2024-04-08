@@ -1,0 +1,37 @@
+# QuantumCrates Crate Configuration #
+example1:
+  id: "example1"
+  name: "Example Common Crate"
+  crate-type: "common"
+  item-type: "chest"
+  rewards:
+    default: "apple:2"
+    basic:
+      - "apple:3:90"
+      - "gold_ingot:4:30"
+    common:
+      - "steak:8:50"
+      - "apple:10:80"
+      - "iron_ingot:5:70"
+    uncommon:
+      - "diamond:3:40"
+      - "steak:16:70"
+      - "golden_apple:3:60"
+example2:
+  id: "example2"
+  name: "Example Uncommon Crate"
+  crate-type: "uncommon"
+  item-type: "ender_chest"
+  rewards:
+    default: "apple:5"
+    basic:
+      - "steak:3:50"
+      - "gold_ingot:4:30"
+    common:
+      - "steak:6:50"
+      - "apple:12:80"
+      - "iron_ingot:9:70"
+    uncommon:
+      - "diamond:5:40"
+      - "steak:16:70"
+      - "golden_apple:7:60"

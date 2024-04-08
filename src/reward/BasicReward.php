@@ -27,14 +27,19 @@ namespace nicholass003\quantumcrates\reward;
 use nicholass003\quantumcrates\reward\chance\RewardDefaultChance;
 use nicholass003\quantumcrates\reward\tier\RewardTier;
 use pocketmine\item\Item;
+use pocketmine\item\VanillaItems;
 
 class BasicReward implements Reward{
 
 	public function __construct(
 		private array $items,
 		private string $id,
-		private Item $defaultItem
-	){}
+		private ?Item $defaultItem = null
+	){
+		if($defaultItem === null){
+			$this->defaultItem = VanillaItems::APPLE();
+		}
+	}
 
 	public function getId() : string{
 		return $this->id;

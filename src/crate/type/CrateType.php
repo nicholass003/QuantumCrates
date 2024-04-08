@@ -24,6 +24,7 @@ declare(strict_types=1);
 
 namespace nicholass003\quantumcrates\crate\type;
 
+use nicholass003\quantumcrates\crate\utils\CrateColorNameUtils;
 use pocketmine\utils\LegacyEnumShimTrait;
 
 /**
@@ -37,7 +38,6 @@ use pocketmine\utils\LegacyEnumShimTrait;
  * @method static CrateType VERY_RARE()
  * @method static CrateType ULTRA_RARE()
  * @method static CrateType MYTHICAL()
- *
  */
 
 enum CrateType{
@@ -68,6 +68,6 @@ enum CrateType{
 	}
 
 	public function getName() : string{
-		return $this->getData()[0];
+		return CrateColorNameUtils::defaultColor($this) . $this->getData()[0];
 	}
 }

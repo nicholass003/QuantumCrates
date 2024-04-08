@@ -24,9 +24,12 @@ declare(strict_types=1);
 
 namespace nicholass003\quantumcrates\command;
 
+use nicholass003\quantumcrates\crate\CrateManager;
+use nicholass003\quantumcrates\crate\utils\CrateItemUtils;
 use nicholass003\quantumcrates\QuantumCrates;
 use pocketmine\command\CommandSender;
 use pocketmine\player\Player;
+use pocketmine\utils\TextFormat;
 use function strtolower;
 
 class QuantumCratesCommand extends QuantumCratesBaseCommand{
@@ -44,11 +47,23 @@ class QuantumCratesCommand extends QuantumCratesBaseCommand{
 				switch(strtolower($args[0])){
 					case "get":
 						if(!$sender->hasPermission("quantumcrates.command.get")){
-							$sender->sendMessage(QuantumCrates::PREFIX . "You do not have permission to use this command.");
+							$sender->sendMessage(QuantumCrates::PREFIX . TextFormat::RED . "You do not have permission to use this command.");
 							return;
 						}
+						if(isset($args[1])){
+							$crate = CrateManager::getInstance()->getCrateById($args[1]);
+							if($crate === null){
+								$sender->sendMessage(QuantumCrates::PREFIX . TextFormat::RED . "No crates were found with id: {$args[1]}.");
+								return;
+							}
+							$sender->getInventory()->addItem(CrateItemUtils::write($crate));
+						}
 						break;
+					default:
+						$sender->sendMessage(TextFormat::RED . "Usage: /quantumcrates [options]");
 				}
+			}else{
+				$sender->sendMessage(TextFormat::RED . "Usage: /quantumcrates [options]");
 			}
 		}
 	}
