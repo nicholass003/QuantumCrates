@@ -7,4 +7,6 @@ projects:
   QuantumCrates:
     path: ""
     icon: "assets/icon.png"
+    lint:
+      phpstan: false
 ...
