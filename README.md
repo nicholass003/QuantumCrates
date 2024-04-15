@@ -10,8 +10,11 @@ We value your feedback! If you encounter any issues or have any suggestions for 
 ## Demo Plugin
 ![Example](assets/demo.gif)
 
+## Animations
+![Example](assets/animation_linear.gif)
+
 ## TODO List:
-- [ ] Crate Animations
+- [x] Crate Animations
 - [ ] Crate API (customizable from other plugin)
 - [ ] Custom Crate Name Color
 - [ ] UI Form Setup
