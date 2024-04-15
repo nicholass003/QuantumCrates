@@ -24,12 +24,16 @@ declare(strict_types=1);
 
 namespace nicholass003\quantumcrates\crate;
 
+use muqsit\invmenu\InvMenu;
+use nicholass003\quantumcrates\animation\Animation;
+use nicholass003\quantumcrates\animation\AnimationType;
 use nicholass003\quantumcrates\crate\utils\CrateTypeUtils;
 use nicholass003\quantumcrates\item\ItemSaviorManager;
 use nicholass003\quantumcrates\ManagerTrait;
 use nicholass003\quantumcrates\QuantumCrates;
 use nicholass003\quantumcrates\reward\BasicReward;
 use nicholass003\quantumcrates\reward\CommonReward;
+use nicholass003\quantumcrates\reward\Reward;
 use nicholass003\quantumcrates\reward\UncommonReward;
 use pocketmine\item\StringToItemParser;
 use pocketmine\utils\Config;
@@ -56,8 +60,16 @@ final class CrateManager{
 				"ultra_rare" => $crateData["rewards"]["ultra_rare"] ?? null,
 				"mythical" => $crateData["rewards"]["mythical"] ?? null
 			]));
+			$itemRewards = [];
+			/** @var Reward $reward */
+			foreach($crate->getRewards() as $reward){
+				foreach($reward->getItems() as $itemNBT => $chance){
+					$itemRewards[] = ItemSaviorManager::getInstance()->read($itemNBT);
+				}
+			}
+			// Animation tester
+			$crate->setAnimation(new Animation($itemRewards, InvMenu::TYPE_CHEST, 5, AnimationType::LINEAR));
 			$this->addCrate($crate->getId(), $crate);
-			var_dump($crate->getRewards());
 		}
 	}
 

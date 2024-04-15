@@ -24,6 +24,7 @@ declare(strict_types=1);
 
 namespace nicholass003\quantumcrates;
 
+use muqsit\invmenu\InvMenuHandler;
 use nicholass003\quantumcrates\command\QuantumCratesCommand;
 use nicholass003\quantumcrates\crate\CrateManager;
 use nicholass003\quantumcrates\item\ItemSaviorManager;
@@ -49,6 +50,14 @@ class QuantumCrates extends PluginBase{
 		$this->saveDefaultConfig();
 		$this->saveResource("crates.yml");
 
+		self::setInstance($this);
+	}
+
+	protected function onEnable() : void{
+		if(!InvMenuHandler::isRegistered()){
+			InvMenuHandler::register($this);
+		}
+
 		if(!CrateManager::isRegistered()){
 			$crateManager = new CrateManager($this);
 			$crateManager->init();
@@ -63,9 +72,6 @@ class QuantumCrates extends PluginBase{
 			$rewardManager = new RewardManager($this);
 			$rewardManager->init();
 		}
-	}
-
-	protected function onEnable() : void{
 
 		$this->data = new Config($this->getDataFolder() . "crates.yml", Config::YAML);
 

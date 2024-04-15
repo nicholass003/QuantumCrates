@@ -24,13 +24,16 @@ declare(strict_types=1);
 
 namespace nicholass003\quantumcrates\crate;
 
+use nicholass003\quantumcrates\animation\Animation;
 use nicholass003\quantumcrates\crate\type\CrateItemType;
 use nicholass003\quantumcrates\crate\type\CrateType;
 use nicholass003\quantumcrates\probability\Probability;
 use nicholass003\quantumcrates\probability\ProbabilityCalculateType;
+use nicholass003\quantumcrates\QuantumCrates;
 use nicholass003\quantumcrates\reward\BasicReward;
 use nicholass003\quantumcrates\reward\Reward;
 use nicholass003\quantumcrates\reward\RewardManager;
+use nicholass003\quantumcrates\task\OpenCrateTask;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\item\Item;
 use pocketmine\player\Player;
@@ -45,6 +48,8 @@ class Crate{
 
 	private Item $itemType;
 	private ?BasicReward $basicReward = null;
+
+	private ?Animation $animation = null;
 
 	public function __construct(
 		private string $id,
@@ -102,6 +107,19 @@ class Crate{
 		return $this;
 	}
 
+	public function getAnimation() : ?Animation{
+		return $this->animation;
+	}
+
+	public function setAnimation(Animation $animation) : Crate{
+		$this->animation = $animation;
+		return $this;
+	}
+
+	public function sendBroadcastMessage(string $message) : void{
+		Server::getInstance()->broadcastMessage($message);
+	}
+
 	public function openCrate(Player $player, int $count = 1) : void{
 		$probabilities = [];
 		foreach($this->rewards as $reward){
@@ -115,8 +133,14 @@ class Crate{
 				$resultsItems = $probabilityItems->generateResults($count);
 				/** @var Item $item */
 				foreach($resultsItems as $item){
-					$player->getInventory()->addItem($item);
-					Server::getInstance()->broadcastMessage($player->getName() . " just got " . $item->getName() . " x" . $item->getCount() . " from " . $this->getName());
+					if($this->animation === null){
+						$player->getInventory()->addItem($item);
+						$this->sendBroadcastMessage($player->getName() . " just got " . $item->getName() . " x" . $item->getCount() . " from " . $this->getName());
+					}else{
+						$this->animation->setOpener($player);
+						$this->animation->setOpened();
+						QuantumCrates::getInstance()->getScheduler()->scheduleRepeatingTask(new OpenCrateTask($this, $player, $item), 20);
+					}
 				}
 			}
 		}
