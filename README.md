@@ -17,7 +17,8 @@ We value your feedback! If you encounter any issues or have any suggestions for 
 - [x] Crate Animations
 - [ ] Crate API (customizable from other plugin)
 - [ ] Custom Crate Name Color
-- [ ] UI Form Setup
+- [ ] GUI Setup
+- [ ] Show Crate Rewards
 
 ## Credits
 <a target="_blank" href="https://icons8.com/icon/K7i3YC8sO2n5/chest">Chest</a> icon by <a target="_blank" href="https://icons8.com">Icons8</a>
