@@ -68,7 +68,7 @@ final class CrateManager{
 				}
 			}
 			// Animation tester
-			$crate->setAnimation(new Animation($itemRewards, InvMenu::TYPE_CHEST, 5, AnimationType::LINEAR));
+			$crate->setAnimation(new Animation($crate, $itemRewards, InvMenu::TYPE_CHEST, 5, AnimationType::LINEAR));
 			$this->addCrate($crate->getId(), $crate);
 		}
 	}
