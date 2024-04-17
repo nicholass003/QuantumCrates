@@ -29,6 +29,7 @@ use muqsit\invmenu\InvMenu;
 use muqsit\invmenu\transaction\InvMenuTransaction;
 use muqsit\invmenu\transaction\InvMenuTransactionResult;
 use muqsit\invmenu\type\InvMenuTypeIds;
+use nicholass003\quantumcrates\crate\Crate;
 use pocketmine\block\utils\DyeColor;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\inventory\Inventory;
@@ -52,12 +53,14 @@ class Animation{
     private bool $opened = false;
 
     public function __construct(
+        protected readonly Crate $crate,
         protected readonly array $rewards,
         protected readonly string $invMenuType,
         protected readonly int $countdown,
         protected readonly int $animationType
     ){
         $this->menu = InvMenu::create($invMenuType);
+        $this->menu->setName($this->crate->getName());
         $this->menu->setListener(function(InvMenuTransaction $transaction) : InvMenuTransactionResult{
             return $transaction->discard();
         });
@@ -72,6 +75,10 @@ class Animation{
             default:
                 throw new InvalidArgumentException("Invalid inventory menu type: " . $this->invMenuType);
         }
+    }
+
+    public function getCrate() : Crate{
+        return $this->crate;
     }
 
     public function getRewardSlot() : array{
